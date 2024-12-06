@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebAppIdentiyAuth.Data;
+using WebAppIdentiyAuth.Models;
 
 namespace WebAppIdentiyAuth
 {
@@ -11,12 +12,16 @@ namespace WebAppIdentiyAuth
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+            // add (custom) identity
+            //builder.Services.AddDefaultIdentity<IdentityUser>(options => 
+            //builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => 
+            builder.Services.AddDefaultIdentity<ApplicationUser>(options => 
+                options.SignIn.RequireConfirmedAccount = false)         // false: while in dev-mode
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
@@ -67,7 +72,8 @@ namespace WebAppIdentiyAuth
 
             using (var scope = app.Services.CreateScope())
             {
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                //var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
                 string email = "admin@admin.de";
                 string password = "Test1234,";
@@ -75,10 +81,11 @@ namespace WebAppIdentiyAuth
                 if (await userManager.FindByEmailAsync(email) == null)
                 {
                     // create user
-                    var user = new IdentityUser();
+                    //var user = new IdentityUser();
+                    var user = new ApplicationUser();
                     user.Email = email;
                     user.UserName = email;
-                    // workaroung if email confirmation is on
+                    // workaround if email confirmation is turned on
                     //user.EmailConfirmed = true;
 
                     // add user to db
