@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using WebAppIdentiyAuth.Models;
-
+    
 namespace WebAppIdentiyAuth.Controllers
 {
     //[Authorize(Roles = "Admin")]
