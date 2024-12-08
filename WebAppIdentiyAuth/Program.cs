@@ -47,13 +47,6 @@ namespace WebAppIdentiyAuth
 
             app.UseAuthorization();
 
-            app.MapRazorPages();
-
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapRazorPages();
-            //});
-
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
